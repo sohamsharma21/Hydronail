@@ -3,10 +3,12 @@
   "short_name": "HydroNail",
   "description": "Industrial water treatment monitoring dashboard with real-time IoT data and ML predictions",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#0c1220",
   "theme_color": "#3B82F6",
-  "orientation": "any",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",

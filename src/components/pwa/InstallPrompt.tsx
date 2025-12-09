@@ -14,8 +14,10 @@ export default function InstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [hasPrompted, setHasPrompted] = useState(false);
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
 
   useEffect(() => {
@@ -27,8 +29,9 @@ export default function InstallPrompt() {
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Show prompt after 5 seconds
-      setTimeout(() => setShowPrompt(true), 5000);
+      // Show prompt immediately
+      setShowPrompt(true);
+      setHasPrompted(true);
     };
 
     const handleAppInstalled = () => {
@@ -40,16 +43,24 @@ export default function InstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // Show iOS instructions after delay
-    if (isIOS && !sessionStorage.getItem("iosPromptDismissed")) {
-      setTimeout(() => setShowIOSInstructions(true), 5000);
+    // Show iOS instructions if on iOS
+    if (isIOS && !hasPrompted) {
+      setTimeout(() => setShowIOSInstructions(true), 3000);
+    }
+
+    // For Android without beforeinstallprompt event, show prompt
+    if (isAndroid && !deferredPrompt && !hasPrompted) {
+      setTimeout(() => {
+        setShowPrompt(true);
+        setHasPrompted(true);
+      }, 3000);
     }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [isIOS, isStandalone]);
+  }, [isIOS, isAndroid, isStandalone, deferredPrompt, hasPrompted]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -68,11 +79,8 @@ export default function InstallPrompt() {
   const handleDismiss = () => {
     setShowPrompt(false);
     setShowIOSInstructions(false);
-    sessionStorage.setItem("pwaPromptDismissed", "true");
-    sessionStorage.setItem("iosPromptDismissed", "true");
   };
 
-  if (sessionStorage.getItem("pwaPromptDismissed")) return null;
   if (isInstalled) return null;
 
   // iOS Instructions
@@ -136,7 +144,7 @@ export default function InstallPrompt() {
   // Android/Desktop Install Prompt
   return (
     <AnimatePresence>
-      {showPrompt && deferredPrompt && (
+      {showPrompt && (
         <motion.div
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
@@ -180,10 +188,17 @@ export default function InstallPrompt() {
                     </div>
                   </div>
 
-                  <Button size="sm" onClick={handleInstall} className="w-full">
-                    <Download className="h-4 w-4 mr-2" />
-                    Install Now
-                  </Button>
+                  {deferredPrompt ? (
+                    <Button size="sm" onClick={handleInstall} className="w-full">
+                      <Download className="h-4 w-4 mr-2" />
+                      Install Now
+                    </Button>
+                  ) : (
+                    <div className="bg-muted/50 p-2 rounded-lg text-[10px] md:text-xs text-muted-foreground">
+                      <p className="font-medium mb-1">📱 To install:</p>
+                      <p>Tap menu (⋮) → "Install app" or use your browser's install option</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>

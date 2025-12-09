@@ -33,8 +33,13 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icons/*.png"],
+      registerType: "prompt",
+      strategies: "injectManifest",
+      injectManifest: {
+        minimumFileSizeToCacheInBytes: 0,
+        rollupFormat: "esm",
+      },
+      includeAssets: ["favicon.ico", "icons/**/*.png", "robots.txt"],
       manifest: {
         name: "HydroNail - Water Treatment Monitor",
         short_name: "HydroNail",
@@ -45,20 +50,7 @@ export default defineConfig(({ mode }) => ({
         orientation: "portrait-primary",
         start_url: "/",
         scope: "/",
-        icons: [
-          {
-            src: "/icons/icon-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-            purpose: "maskable any"
-          },
-          {
-            src: "/icons/icon-512x512.png",
-            sizes: "512x512",
-            type: "image/png",
-            purpose: "maskable any"
-          }
-        ],
+        categories: ["utilities", "productivity"],
         screenshots: [
           {
             src: "/icons/icon-512x512.png",
@@ -73,10 +65,88 @@ export default defineConfig(({ mode }) => ({
             form_factor: "narrow"
           }
         ],
+        icons: [
+          {
+            src: "/icons/icon-72x72.png",
+            sizes: "72x72",
+            type: "image/png",
+            purpose: "maskable any"
+          },
+          {
+            src: "/icons/icon-96x96.png",
+            sizes: "96x96",
+            type: "image/png",
+            purpose: "maskable any"
+          },
+          {
+            src: "/icons/icon-128x128.png",
+            sizes: "128x128",
+            type: "image/png",
+            purpose: "maskable any"
+          },
+          {
+            src: "/icons/icon-144x144.png",
+            sizes: "144x144",
+            type: "image/png",
+            purpose: "maskable any"
+          },
+          {
+            src: "/icons/icon-152x152.png",
+            sizes: "152x152",
+            type: "image/png",
+            purpose: "maskable any"
+          },
+          {
+            src: "/icons/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable any"
+          },
+          {
+            src: "/icons/icon-384x384.png",
+            sizes: "384x384",
+            type: "image/png",
+            purpose: "maskable any"
+          },
+          {
+            src: "/icons/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable any"
+          }
+        ],
+        shortcuts: [
+          {
+            name: "Dashboard",
+            short_name: "Dashboard",
+            url: "/dashboard",
+            icons: [
+              {
+                src: "/icons/icon-192x192.png",
+                sizes: "192x192",
+                type: "image/png"
+              }
+            ]
+          },
+          {
+            name: "Monitoring",
+            short_name: "Monitoring",
+            url: "/monitoring",
+            icons: [
+              {
+                src: "/icons/icon-192x192.png",
+                sizes: "192x192",
+                type: "image/png"
+              }
+            ]
+          }
+        ]
       },
       workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,woff,ttf}"],
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.thingspeak\.com\/.*/i,
