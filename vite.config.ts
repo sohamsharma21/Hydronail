@@ -10,6 +10,25 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  build: {
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: mode === "production",
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+    target: ['es2020'],
+  },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
@@ -23,8 +42,9 @@ export default defineConfig(({ mode }) => ({
         theme_color: "#3B82F6",
         background_color: "#0c1220",
         display: "standalone",
-        orientation: "any",
+        orientation: "portrait-primary",
         start_url: "/",
+        scope: "/",
         icons: [
           {
             src: "/icons/icon-192x192.png",
@@ -38,7 +58,21 @@ export default defineConfig(({ mode }) => ({
             type: "image/png",
             purpose: "maskable any"
           }
-        ]
+        ],
+        screenshots: [
+          {
+            src: "/icons/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            form_factor: "wide"
+          },
+          {
+            src: "/icons/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            form_factor: "narrow"
+          }
+        ],
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
