@@ -114,8 +114,28 @@
       if (window.matchMedia("(display-mode: standalone)").matches) {
         console.log("📱 Running in standalone mode");
       }
+      
+      // Add error handler for debugging
+      window.addEventListener("error", (e) => {
+        console.error("Global error:", e.error);
+      });
+      
+      window.addEventListener("unhandledrejection", (e) => {
+        console.error("Unhandled rejection:", e.reason);
+      });
     </script>
     
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Fallback for JavaScript disabled -->
+    <noscript>
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #0c1220; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+        <div style="text-align: center;">
+          <h1>HydroNail</h1>
+          <p>JavaScript is required to run this application.</p>
+          <p>Please enable JavaScript in your browser settings.</p>
+        </div>
+      </div>
+    </noscript>
   </body>
 </html>
