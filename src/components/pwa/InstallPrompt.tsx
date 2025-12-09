@@ -14,27 +14,27 @@ export default function InstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
-  const [hasPrompted, setHasPrompted] = useState(false);
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isAndroid = /Android/.test(navigator.userAgent);
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
 
   useEffect(() => {
+    // Check if already installed
     if (isStandalone) {
       setIsInstalled(true);
       return;
     }
 
     const handleBeforeInstall = (e: Event) => {
+      console.log("beforeinstallprompt event triggered");
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      // Show prompt immediately
       setShowPrompt(true);
-      setHasPrompted(true);
     };
 
     const handleAppInstalled = () => {
+      console.log("App installed successfully");
       setIsInstalled(true);
       setShowPrompt(false);
       setDeferredPrompt(null);
@@ -43,40 +43,38 @@ export default function InstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
     window.addEventListener("appinstalled", handleAppInstalled);
 
-    // Show iOS instructions if on iOS
-    if (isIOS && !hasPrompted) {
+    // For iOS, show instructions
+    if (isIOS) {
       setTimeout(() => setShowIOSInstructions(true), 3000);
-    }
-
-    // For Android without beforeinstallprompt event, show prompt
-    if (isAndroid && !deferredPrompt && !hasPrompted) {
-      setTimeout(() => {
-        setShowPrompt(true);
-        setHasPrompted(true);
-      }, 3000);
     }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
       window.removeEventListener("appinstalled", handleAppInstalled);
     };
-  }, [isIOS, isAndroid, isStandalone, deferredPrompt, hasPrompted]);
+  }, [isIOS, isStandalone]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
 
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === "accepted") {
-      setIsInstalled(true);
+      if (outcome === "accepted") {
+        console.log("User accepted install");
+        setIsInstalled(true);
+      }
+
+      setDeferredPrompt(null);
+      setShowPrompt(false);
+    } catch (error) {
+      console.error("Install error:", error);
     }
-
-    setDeferredPrompt(null);
-    setShowPrompt(false);
   };
 
   const handleDismiss = () => {
+    console.log("Install prompt dismissed");
     setShowPrompt(false);
     setShowIOSInstructions(false);
   };

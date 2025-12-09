@@ -94,6 +94,28 @@
       <div class="loader"></div>
     </div>
     
+    <script type="module">
+      console.log("🚀 HydroNail App Starting...");
+      
+      // Log PWA status
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          console.log("Service Workers registered:", regs.length);
+          regs.forEach(reg => console.log("  - Scope:", reg.scope));
+        });
+      }
+      
+      if ("onbeforeinstallprompt" in window) {
+        console.log("✅ beforeinstallprompt supported");
+      } else {
+        console.log("⚠️ beforeinstallprompt NOT supported on this browser");
+      }
+      
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        console.log("📱 Running in standalone mode");
+      }
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

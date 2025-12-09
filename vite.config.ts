@@ -33,12 +33,9 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
-      registerType: "prompt",
-      strategies: "injectManifest",
-      injectManifest: {
-        minimumFileSizeToCacheInBytes: 0,
-        rollupFormat: "esm",
-      },
+      registerType: "autoUpdate",
+      scope: "/",
+      base: "/",
       includeAssets: ["favicon.ico", "icons/**/*.png", "robots.txt"],
       manifest: {
         name: "HydroNail - Water Treatment Monitor",
@@ -185,6 +182,12 @@ export default defineConfig(({ mode }) => ({
             },
           },
         ],
+      },
+      devOptions: {
+        enabled: true,
+        suppressWarnings: true,
+        navigateFallback: "/",
+        type: "module",
       },
     }),
   ].filter(Boolean),
