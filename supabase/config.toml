@@ -1,0 +1,10 @@
+project_id = "ayxeeghfiuueaqzwohkr"
+
+[functions.send-alert-email]
+verify_jwt = true
+
+[functions.control-machine]
+verify_jwt = true
+
+[functions.ingest-sensor-data]
+verify_jwt = false
